@@ -1,70 +1,124 @@
-# Getting Started with Create React App
+# <p align = "center">Context API</p>
+</br>
+<p align="center"><img width="200px" src="https://user-images.githubusercontent.com/72531277/167236594-a7739e0a-3eec-45f0-a201-649283610069.gif"/></p>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+</br>
+<p align="center"></p>
 
-## Available Scripts
+# 🏁 Context API 
 
-In the project directory, you can run:
+Context API é uma maneira super bacana de passar estados pelos componentes sem precisar utilizar `props`, permitindo a atualização desse estado em qualquer parte da sua aplicação. Claro que em algumas situações é mais adequado o uso das props, mas , à medida que vamos aumentando àrvore de elementos, pode ficar bem chatinho **transportar** essas informações sem o uso de um *gerenciador de estado global*. E ~~caso você não tenha notado~~ esse é o trabalho da Context API. 😅 
 
-### `npm start`
+<p align="center"><img width=600px" src="https://user-images.githubusercontent.com/72531277/167280337-bc0585b0-14b5-493b-a306-7c1c28070210.png"/></p>
+</br>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+👾 Em resumo, é só imaginar que a Context API é um portal entre os componentes por onde você vai compartilhar as informações, independente se são elementos que se comunicam ao não. Belezinha? 
+</br>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+ <p align="center"><img width=600px" src="https://user-images.githubusercontent.com/72531277/167478430-d58e64ac-766f-4e08-bf03-4acd594e8eac.gif"/></p>
+</br>
 
-### `npm test`
+### ❔ Como utilizar 
+ 
+1. Criar um diretório próprio para colocar o seu contexto.
+<p align="center"><img width=400px" src="https://user-images.githubusercontent.com/72531277/167435824-609571e4-ce90-418b-a0ba-695069736ac6.png"/></p>
+</br>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. Criar um arquivo `index.jsx` e dentro dele importar o `createContext` do react.
+</br>
+  
+```javascript
+import React, {createContext, useState} from 'react';
+```
+  
+3. Criar e exportar o seu *context* (no mesmo arquivo)
+</br>
 
-### `npm run build`
+```javascript
+export const MovieContext = createContext({});
+```
+</br>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+👾 Detalhe: cada objeto Contexto (context) vem com um bicho chamado *Provider* e é através dele que você vai conseguir aplicar mudanças no seu context. E isso acontece porque ele aceita uma `props` ~eu nao disse que nao usaríamos props asuhuahs~ e todos os componentes filhos terão acesso a ela. Então no próximo passo vamos criar um provider chamado de *MovieProvider*, onde você vai inserir todas os estados que deseja utilizar na sua aplicação.
+</br>
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. Criar e exporta o seu *provider* (no mesmo arquivo)
+</br>
+ 
+```javascript
+export const MovieProvider = (props) => {
+    const [ movies, setMovies] = useState(()=>{
+        api.get('http://localhost:8000/home')
+        .then(response => { setMovies(response.data)
+        .catch(err => console.log(err))
+    });
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    const [ genres, setGenres ] = useState(()=>{
+        api.get('http://localhost:8000/home/genres')
+        .then(response => setGenres(response.data))
+        .catch(err => console.log(err))
+    });
 
-### `npm run eject`
+    const [ selected, setSelected ] = useState();
+   
+    return(
+        <MovieContext.Provider
+            value={{
+                movies,
+                genres,
+                selected,
+                setSelected,
+            }}
+        >
+            {props.children}
+        </MovieContext.Provider>
+    )
+}
+```
+5. Importar o `provider` no app, e utilizá-lo bem no topo da hierarquia de componentes para criar a sua camada de estados.
+</br>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```javascript
+import React from 'react';
+import { MovieProvider } from './providers/index.jsx';
+import Routes from './routes/index.jsx'
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+function App() {
+  return (
+    <MovieProvider>
+      <GlobalStyle />
+      <Routes />
+    </MovieProvider>
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+  );
+}
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+export default App;
+```
+6. Agora é só importar o *contexto* criado para utilizar as informações do seu provider. 
+```javascript
+import React, { useContext, useState } from 'react'
+import { MovieContext } from '../../providers/index.jsx';
+    
+import Header from '../../components/Header'
+import MovieList from '../../components/MovieList'
+    
+const Home = () => {   
+    const { movies, genres } = useContext(MovieContext);
+    
+    return (
+        <>
+            <Header page="home" className="clicked" ></Header>            
+            { genres ? genres.map(genre => 
+                <MovieList title={genre.title} movies={movies}/>
+            ) :  null}
+        </>
+    )
+}
 
-## Learn More
+export default Home;
+```  
+ 
+###  <p align = "center">Prontinho, passar perrengue com props nunca mais! 😅 </p>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[Créditos](https://gist.github.com/luanalessa/2b3a5d5208f74fa252661af9a8d2754c) [luanalessa](https://gist.github.com/luanalessa)
