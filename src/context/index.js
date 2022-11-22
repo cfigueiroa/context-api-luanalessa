@@ -1,36 +1,29 @@
 import axios from "axios";
 import React, {createContext, useState} from 'react';
 
-export const MovieContext = createContext({});
+export const PokeContext = createContext({});
 
-export const MovieProvider = (props) => {
-  const [movies, setMovies] = useState(() => {
+export const PokeProvider = (props) => {
+  const [pokes, setPokes] = useState(() => {
     axios
-      .get("https://pokeapi.co/api/v2/pokemon-species/")
-      .then((response) => setMovies(response.data))
-      .catch((err) => console.log(err));
-  });
-
-  const [genres, setGenres] = useState(() => {
-    axios
-      .get("https://pokeapi.co/api/v2/pokemon-species/")
-      .then((response) => setGenres(response.data))
+      .get("https://driven-pokemons.herokuapp.com/pokemons")
+      .then((response) => setPokes(response.data))
       .catch((err) => console.log(err));
   });
 
   const [selected, setSelected] = useState();
 
   return (
-    <MovieContext.Provider
+    <PokeContext.Provider
       value={{
-        movies,
-        genres,
+        pokes,
+        setPokes,
         selected,
         setSelected,
       }}
     >
       {props.children}
-    </MovieContext.Provider>
+    </PokeContext.Provider>
   );
 };
 

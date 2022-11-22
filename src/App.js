@@ -1,12 +1,12 @@
 import React from 'react';
-import { MovieProvider } from './context/index';
+import { PokeProvider } from './context/index';
 import Home from './components/Home';
 
 function App() {
   return (
-    <MovieProvider>
+    <PokeProvider>
       <Home />
-    </MovieProvider>
+    </PokeProvider>
   );
 }
 
