@@ -1,20 +1,15 @@
-import axios from "axios"
-import { createContext, useState } from 'react'
+import { createContext } from 'react'
+import { useState } from 'react';
 
 export const PokeContext = createContext({})
 
 export const PokeProvider = (props) => {
-  const [pokes, setPokes] = useState(() => {
-    axios
-      .get("https://driven-pokemons.herokuapp.com/pokemons")
-      .then((response) => setPokes(response.data))
-      .catch((err) => console.log(err))
-  })
-
-  const [selected, setSelected] = useState()
+  const [selected, setSelected] = useState(false)
+  const [pokes, setPokes] = useState([{ name: "Bulbasaur", type: "Grass" }, { name: "Charmander", type: "Fire" }, { name: "Squirtle", type: "Water" }]
+  )
 
   return (
-    <PokeContext.Provider value={{ pokes, setPokes, selected, setSelected }}>
+    <PokeContext.Provider value={{ selected, setSelected, pokes, setPokes }}>
       {props.children}
     </PokeContext.Provider>
   )

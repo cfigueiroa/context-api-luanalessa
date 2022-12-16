@@ -1,19 +1,18 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { PokeContext } from '../context/index';
 
 const Home = () => {
-    const { pokes } = useContext(PokeContext);
+    const { selected, setSelected, pokes, setPokes } = useContext(PokeContext);
     return (
         <div>
-            <h1>Gotta Catch 'Em All!</h1>
-            {pokes && pokes.map(poke =>
-                <ul key={poke.name} style={{ listStyleType: "none", border: "1px solid black" }}>
+            <h1 onClick={() => setSelected(!selected)}> Gotta --Click-- 'Em All! </h1>
+            {pokes && selected && pokes.map(poke =>
+                <ul key={poke.name}>
                     <li>Name: {poke.name}</li>
-                    <li>Type: {poke.type.charAt(0).toUpperCase() + poke.type.slice(1)}</li>
-                    <li><img src={poke.img} alt={poke.name}></img></li>
-                    <li>Health: {poke.health}</li>
+                    <li>Type: {poke.type}</li>
                 </ul>
             )}
+            {selected && <button onClick={() => setPokes()}>Delete all</button>}
         </div>
     )
 }
